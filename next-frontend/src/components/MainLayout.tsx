@@ -116,6 +116,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           className={`${classes.sidebar} ${isSidebarVisible ? '' : classes.hidden}`}
         >
           <Sidebar
+            authToken={authToken}
             publications={publications}
             identifierFilter={identifierFilter}
             categoryFilter={categoryFilter}
