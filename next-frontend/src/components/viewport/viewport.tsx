@@ -3,6 +3,7 @@ import { TextInput, Card, Text, Group, Pagination } from '@mantine/core';
 import axios from 'axios';
 import qs from 'qs';
 import { Publication } from '../types/publication';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ViewportProps {
   authToken: string | null;
@@ -125,6 +126,53 @@ export function Viewport({
     setSelectedPublication(publication);
   };
 
+  // Animation variants for list items
+  const listVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20
+    },
+    visible: (index: number) => ({ 
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: index * 0.1,
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }),
+    exit: { 
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  // Animation variants for the details card
+  const detailsVariants = {
+    hidden: { 
+      opacity: 0,
+      x: 50
+    },
+    visible: { 
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    },
+    exit: { 
+      opacity: 0,
+      x: 50,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <TextInput
@@ -136,60 +184,114 @@ export function Viewport({
       
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: selectedPublication ? '1fr 1fr' : '1fr', 
+        gridTemplateColumns: '1fr',
         gap: '20px',
-        marginBottom: '20px'
+        marginBottom: '20px',
+        position: 'relative',
+        minHeight: '400px'
       }}>
-        <div>
-          {publications.map((pub) => (
-            <Card 
-              key={pub.id}
-              shadow="sm" 
-              padding="sm"
-              radius="md" 
-              withBorder
-              mb="xs"
-              onClick={() => handlePublicationSelect(pub)}
-              style={{ 
-                cursor: 'pointer',
-                color: "black",
-                backgroundColor: selectedPublication?.id === pub.id ? 'white' : 'lightgray'
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            style={{ width: selectedPublication ? '48%' : '100%' }}
+          >
+            {publications.map((pub, index) => (
+              <motion.div
+                key={pub.id}
+                variants={listVariants}
+                custom={index}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
+              >
+                <Card 
+                  shadow="sm" 
+                  padding="sm"
+                  radius="md" 
+                  withBorder
+                  mb="xs"
+                  onClick={() => handlePublicationSelect(pub)}
+                  style={{ 
+                    cursor: 'pointer',
+                    color: "black",
+                    backgroundColor: selectedPublication?.id === pub.id ? 'white' : 'lightgray'
+                  }}
+                >
+                  <Text fw={500} size="md" mb={4}>
+                    {pub.name}
+                  </Text>
+                  <Group mt={4} gap="xs">
+                    <Text size="xs" c="dimmed">ID: {pub.identifier}</Text>
+                    <Text size="xs" c="dimmed">Status: {pub.status}</Text>
+                    <Text size="xs" c="dimmed">Category: {pub.category}</Text>
+                  </Group>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedPublication && (
+            <motion.div
+              key={selectedPublication.id}
+              variants={detailsVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '48%'
               }}
             >
-              <Text fw={500} size="md" mb={4}>
-                {pub.name}
-              </Text>
-              <Group mt={4} gap="xs">
-                <Text size="xs" c="dimmed">ID: {pub.identifier}</Text>
-                <Text size="xs" c="dimmed">Status: {pub.status}</Text>
-                <Text size="xs" c="dimmed">Category: {pub.category}</Text>
-              </Group>
-            </Card>
-          ))}
-        </div>
-
-        {selectedPublication && (
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text fw={700} size="lg" mb="md">{selectedPublication.name}</Text>
-            <Text size="sm" mb="xs"><strong>ID:</strong> {selectedPublication.id}</Text>
-            <Text size="sm" mb="xs"><strong>Identifier:</strong> {selectedPublication.identifier}</Text>
-            <Text size="sm" mb="xs"><strong>UID:</strong> {selectedPublication.uid}</Text>
-            <Text size="sm" mb="xs"><strong>Category:</strong> {selectedPublication.category}</Text>
-            <Text size="sm" mb="xs"><strong>Level:</strong> {selectedPublication.level}</Text>
-            <Text size="sm" mb="xs"><strong>Status:</strong> {selectedPublication.status}</Text>
-            <Text size="sm" mb="xs"><strong>Visibility:</strong> {selectedPublication.is_visible ? 'Visible' : 'Hidden'}</Text>
-            <Text size="sm" mb="xs"><strong>Is Default:</strong> {selectedPublication.is_default ? 'Yes' : 'No'}</Text>
-          </Card>
-        )}
+              <Card shadow="sm" padding="lg" radius="md" withBorder>
+                <Text fw={700} size="lg" mb="md">{selectedPublication.name}</Text>
+                <Text size="sm" mb="xs"><strong>ID:</strong> {selectedPublication.id}</Text>
+                <Text size="sm" mb="xs"><strong>Identifier:</strong> {selectedPublication.identifier}</Text>
+                <Text size="sm" mb="xs"><strong>UID:</strong> {selectedPublication.uid}</Text>
+                <Text size="sm" mb="xs"><strong>Category:</strong> {selectedPublication.category}</Text>
+                <Text size="sm" mb="xs"><strong>Level:</strong> {selectedPublication.level}</Text>
+                <Text size="sm" mb="xs"><strong>Status:</strong> {selectedPublication.status}</Text>
+                <Text size="sm" mb="xs"><strong>Visibility:</strong> {selectedPublication.is_visible ? 'Visible' : 'Hidden'}</Text>
+                <Text size="sm" mb="xs"><strong>Is Default:</strong> {selectedPublication.is_default ? 'Yes' : 'No'}</Text>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       
-      <Group justify="center" mb="xl">
-        <Pagination 
-          total={totalPages} 
-          value={currentPage} 
-          onChange={handlePageChange}
-        />
-      </Group>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Group justify="center" mb="xl">
+          <Pagination 
+            total={totalPages} 
+            value={currentPage} 
+            onChange={handlePageChange}
+            styles={(theme) => ({
+              control: {
+                transition: 'all 0.2s ease',
+                '&[dataActive="true"]': {
+                  transform: 'scale(1.1)',
+                  backgroundColor: theme.colors.blue[6],
+                },
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  backgroundColor: theme.colors.gray[2],
+                },
+              }
+            })}
+          />
+        </Group>
+      </motion.div>
     </div>
   );
 }
