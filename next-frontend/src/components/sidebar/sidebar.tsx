@@ -69,20 +69,20 @@ export function Sidebar({
         const allPubs = response.data._embedded.edition;
         
         // Extract unique identifiers and categories
-        const identifiers = Array.from(new Set(allPubs.map(pub => pub.identifier)))
+        const identifiers = Array.from(new Set(allPubs.map((pub: { identifier: string }) => pub.identifier)))
           .filter(Boolean)
           .sort()
-          .map(value => ({
-            value,
-            label: value
+          .map((value) => ({
+            value: value as string,
+            label: value as string
           }));
 
-        const categories = Array.from(new Set(allPubs.map(pub => pub.category)))
+        const categories = Array.from(new Set(allPubs.map((pub: { category: string }) => pub.category)))
           .filter(Boolean)
           .sort()
-          .map(value => ({
-            value,
-            label: value
+          .map((value) => ({
+            value: value as string,
+            label: value as string
           }));
 
         setAllIdentifiers(identifiers);
