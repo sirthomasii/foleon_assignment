@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, Select } from '@mantine/core';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from 'react-datepicker';
+// import "react-datepicker/dist/react-datepicker.css";
 
 interface SidebarProps {
   publications: Array<{
@@ -64,7 +64,7 @@ export function Sidebar({
 
       <Text size="xs" fw={500} mb={3}>Date Range</Text>
       <Box mb="md">
-        <DatePicker
+        {/* <DatePicker
           selectsRange={true}
           startDate={dateFilter[0] || undefined}
           endDate={dateFilter[1] || undefined}
@@ -77,7 +77,7 @@ export function Sidebar({
           className="form-control"
           minDate={new Date('2023-01-01')}
           maxDate={new Date('2023-12-31')}
-        />
+        /> */}
       </Box>
     </Box>
   );
