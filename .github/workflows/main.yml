@@ -1,0 +1,42 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'next-frontend/**'  # Only trigger on changes in next-frontend
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'next-frontend/**'  # Only trigger on changes in next-frontend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: next-frontend  # Set default working directory
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: next-frontend/package-lock.json  # Specify path for cache
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: next-frontend/coverage/
+      if: always()
