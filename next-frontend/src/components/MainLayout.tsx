@@ -87,7 +87,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         minHeight: '100vh',
         padding: 0,
         boxShadow: '0 4px 15px 0 rgba(0, 0, 0, 0.8), 0 6px 20px 0 rgba(0, 0, 0, 0.8)',
-        backgroundColor: '#2424248c'
+        backgroundColor: '#2424248c',
       }}
     >
       {children}
@@ -110,7 +110,8 @@ export function MainLayout({ children }: MainLayoutProps) {
           style={{ 
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
             flexShrink: 0,
-            borderRight: '1px solid black',
+            borderRight: '1px solid rgba(255, 255, 255, 0.25)',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.25)',
           }}
           className={`${classes.sidebar} ${isSidebarVisible ? '' : classes.hidden}`}
         >
@@ -122,7 +123,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             onCategoryChange={(value) => handleFilterChange('category', value)}
           />
         </Box>
-        <Box style={{ flex: 1, position: 'relative', backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
+        <Box style={{ flex: 1, position: 'relative', backgroundColor: 'rgba(0, 0, 0, 0.75)', borderRight: '1px solid rgba(255, 255, 255, 0.25)' }}>
           <Viewport 
             authToken={authToken} 
             initialPublication={initialPublication}
