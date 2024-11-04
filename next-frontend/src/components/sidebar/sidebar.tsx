@@ -17,7 +17,7 @@ interface SidebarProps {
 
 export function Sidebar({ 
   authToken, 
-  publications, 
+  publications,  
   identifierFilter, 
   categoryFilter, 
   onIdentifierChange, 
