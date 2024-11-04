@@ -5,6 +5,7 @@ import { MantineProvider } from '@mantine/core'
 import { useState } from 'react'
 import '@mantine/core/styles.css'
 import './globals.css'
+import MatrixBackground from '../components/MatrixBackground'
 
 export default function RootLayout({
   children,
@@ -20,6 +21,7 @@ export default function RootLayout({
       </head>
 
       <body>
+        <MatrixBackground />
         <QueryClientProvider client={queryClient}>
           <MantineProvider>
             {children}

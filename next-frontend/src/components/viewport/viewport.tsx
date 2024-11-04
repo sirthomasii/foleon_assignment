@@ -154,7 +154,8 @@ export function Viewport({
               onClick={() => setSelectedPublication(pub)}
               style={{ 
                 cursor: 'pointer',
-                backgroundColor: selectedPublication?.id === pub.id ? '#f0f0f0' : 'white'
+                color: "black",
+                backgroundColor: selectedPublication?.id === pub.id ? 'white' : 'lightgray'
               }}
             >
               <Text fw={500} size="md" mb={4}>

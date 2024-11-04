@@ -85,9 +85,9 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   const handleFilterChange = (type: 'identifier' | 'category', value: string | null) => {
     if (type === 'identifier') {
-      setIdentifierFilter(value);
-    } else {
-      setCategoryFilter(value);
+      setIdentifierFilter(prev => (prev === value ? null : value));
+    } else if (type === 'category') {
+      setCategoryFilter(prev => (prev === value ? null : value));
     }
   };
 
@@ -118,6 +118,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <Box 
           w={300} 
           style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
             flexShrink: 0,
             borderRight: '1px solid black',
           }}
@@ -133,7 +134,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             onDateChange={setDateFilter}
           />
         </Box>
-        <Box style={{ flex: 1, position: 'relative' }}>
+        <Box style={{ flex: 1, position: 'relative', backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
           <Viewport 
             authToken={authToken} 
             initialPublication={initialPublication}
