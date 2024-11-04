@@ -23,6 +23,6 @@ describe('Sidebar', () => {
         />
       </MantineProvider>
     );
-    expect(screen.getByText('pub1')).toBeInTheDocument();
+    expect(screen.getByText('news')).toBeInTheDocument();
   });
 });
