@@ -31,7 +31,7 @@ export function Viewport({
     search?: string, 
     page?: number, 
     limit?: number 
-  }) => {
+  }, shouldUpdateSelected: boolean = false) => {
     if (!authToken) return;
 
     try {
@@ -74,41 +74,55 @@ export function Viewport({
       const newPublications = response.data._embedded.edition;
       setPublications(newPublications);
       onPublicationsChange(newPublications);
+      
+      // Only update selected publication on initial load or when explicitly requested
+      if (shouldUpdateSelected && newPublications.length > 0) {
+        setSelectedPublication(newPublications[0]);
+      }
+      
       const totalItems = response.data.total_items;
       setTotalPages(Math.ceil(totalItems / ITEMS_PER_PAGE));
     } catch (error) {
       console.error('Error fetching publications:', error);
     }
-  }, [authToken, identifierFilter, categoryFilter]);
+  }, [authToken, identifierFilter, categoryFilter, currentPage]);
 
   // Update useEffect to set initial publication
   useEffect(() => {
     if (authToken) {
-      fetchPublications();
+      fetchPublications({}, true); // true to update selected publication on initial load
       if (initialPublication && !selectedPublication) {
         setSelectedPublication(initialPublication);
       }
     }
-  }, [authToken, initialPublication, selectedPublication, fetchPublications]);
+  }, [authToken, initialPublication]);
 
   // Add effect to refetch when filters change
   useEffect(() => {
     if (authToken) {
-      fetchPublications();
+      fetchPublications({}, true); // true to update selected publication when filters change
+      setCurrentPage(1); // Reset to first page when filters change
     }
-  }, [authToken, identifierFilter, categoryFilter, fetchPublications]);
+  }, [authToken, identifierFilter, categoryFilter]);
 
   // Add handler for page changes
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    fetchPublications({ page: newPage, search: searchQuery });
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      fetchPublications({ page: newPage }, false); // false to preserve selected publication
+    }
   };
 
   // Handle search input changes
   const handleSearch = (value: string) => {
     setSearchQuery(value);
-    setCurrentPage(1); // Reset to first page on new search
-    fetchPublications({ search: value, page: 1 });
+    setCurrentPage(1);
+    fetchPublications({ search: value, page: 1 }, true); // true to update selected publication on search
+  };
+
+  // Handle publication selection
+  const handlePublicationSelect = (publication: Publication) => {
+    setSelectedPublication(publication);
   };
 
   return (
@@ -135,7 +149,7 @@ export function Viewport({
               radius="md" 
               withBorder
               mb="xs"
-              onClick={() => setSelectedPublication(pub)}
+              onClick={() => handlePublicationSelect(pub)}
               style={{ 
                 cursor: 'pointer',
                 color: "black",

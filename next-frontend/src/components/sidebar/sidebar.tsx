@@ -60,7 +60,7 @@ export function Sidebar({
 
   return (
     <Box p="md">
-      <img src="https://i.imgur.com/k4VUZTN.png" alt="Logo" style={{ width: '100px', marginBottom: '8px', filter: 'invert(1)' }} />
+      <img src="https://i.imgur.com/k4VUZTN.png" alt="Logo" style={{ width: '100px', marginBottom: '8px', filter: 'invert(1)', paddingLeft: '20px' }} />
       
       <Stack>
         <Accordion value={activeAccordion} onChange={setActiveAccordion}>
