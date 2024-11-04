@@ -18,10 +18,8 @@ describe('Sidebar', () => {
           publications={mockPublications}
           identifierFilter={null}
           categoryFilter={null}
-          dateFilter={[null, null]}
           onIdentifierChange={() => {}}
           onCategoryChange={() => {}}
-          onDateChange={() => {}}
         />
       </MantineProvider>
     );

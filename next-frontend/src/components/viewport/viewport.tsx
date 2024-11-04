@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TextInput, Card, Text, Group, Pagination } from '@mantine/core';
 import axios from 'axios';
 import qs from 'qs';
@@ -6,10 +6,9 @@ import { Publication } from '../types/publication';
 
 interface ViewportProps {
   authToken: string | null;
-  initialPublication: any;
+  initialPublication: Publication | null;
   identifierFilter: string | null;
   categoryFilter: string | null;
-  dateFilter: [Date | null, Date | null];
   onPublicationsChange: (publications: Publication[]) => void;
 }
 
@@ -18,7 +17,6 @@ export function Viewport({
   initialPublication, 
   identifierFilter,
   categoryFilter,
-  dateFilter,
   onPublicationsChange 
 }: ViewportProps) {
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -28,27 +26,8 @@ export function Viewport({
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
-  // Update useEffect to set initial publication
-  useEffect(() => {
-    if (authToken) {
-      fetchPublications();
-      if (initialPublication && !selectedPublication) {
-        setSelectedPublication(initialPublication);
-      }
-    }
-  }, [authToken, initialPublication]);
-
-  // Helper function to format date
-  const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
-    const day = date.getDate().toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
-
   // Function to fetch publications with filters
-  const fetchPublications = async (filters?: { 
+  const fetchPublications = useCallback(async (filters?: { 
     search?: string, 
     page?: number, 
     limit?: number 
@@ -77,11 +56,6 @@ export function Viewport({
                 field: 'category',
                 type: 'eq',
                 value: categoryFilter
-              }] : []),
-              ...(dateFilter[0] && dateFilter[1] ? [{
-                field: 'created_on',
-                type: 'between',
-                value: `${formatDate(dateFilter[0])},${formatDate(dateFilter[1])}`
               }] : [])
             ],
             'order-by': [{
@@ -105,14 +79,24 @@ export function Viewport({
     } catch (error) {
       console.error('Error fetching publications:', error);
     }
-  };
+  }, [authToken, identifierFilter, categoryFilter]);
+
+  // Update useEffect to set initial publication
+  useEffect(() => {
+    if (authToken) {
+      fetchPublications();
+      if (initialPublication && !selectedPublication) {
+        setSelectedPublication(initialPublication);
+      }
+    }
+  }, [authToken, initialPublication, selectedPublication, fetchPublications]);
 
   // Add effect to refetch when filters change
   useEffect(() => {
     if (authToken) {
       fetchPublications();
     }
-  }, [authToken, identifierFilter, categoryFilter, dateFilter]);
+  }, [authToken, identifierFilter, categoryFilter, fetchPublications]);
 
   // Add handler for page changes
   const handlePageChange = (newPage: number) => {
@@ -181,13 +165,6 @@ export function Viewport({
             <Text size="sm" mb="xs"><strong>Status:</strong> {selectedPublication.status}</Text>
             <Text size="sm" mb="xs"><strong>Visibility:</strong> {selectedPublication.is_visible ? 'Visible' : 'Hidden'}</Text>
             <Text size="sm" mb="xs"><strong>Is Default:</strong> {selectedPublication.is_default ? 'Yes' : 'No'}</Text>
-            
-            <Text fw={600} size="sm" mt="md" mb="xs">Dates:</Text>
-            <Text size="xs" mb="xs"><strong>Created:</strong> {formatDate(selectedPublication.created_on ? new Date(selectedPublication.created_on) : null)}</Text>
-            <Text size="xs" mb="xs"><strong>Modified:</strong> {formatDate(selectedPublication.modified_on ? new Date(selectedPublication.modified_on) : null)}</Text>
-            <Text size="xs" mb="xs"><strong>Affected:</strong> {formatDate(selectedPublication.affected_on ? new Date(selectedPublication.affected_on) : null)}</Text>
-            <Text size="xs" mb="xs"><strong>First Published:</strong> {formatDate(selectedPublication.first_published_on ? new Date(selectedPublication.first_published_on) : null)}</Text>
-            <Text size="xs" mb="xs"><strong>Published:</strong> {formatDate(selectedPublication.published_on ? new Date(selectedPublication.published_on) : null)}</Text>
           </Card>
         )}
       </div>

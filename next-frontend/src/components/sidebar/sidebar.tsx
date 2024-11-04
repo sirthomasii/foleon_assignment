@@ -8,20 +8,16 @@ interface SidebarProps {
   }>;
   identifierFilter: string | null;
   categoryFilter: string | null;
-  dateFilter: [Date | null, Date | null];
   onIdentifierChange: (value: string | null) => void;
   onCategoryChange: (value: string | null) => void;
-  onDateChange: (value: [Date | null, Date | null]) => void;
 }
 
 export function Sidebar({ 
   publications, 
   identifierFilter, 
   categoryFilter, 
-  dateFilter, 
   onIdentifierChange, 
-  onCategoryChange, 
-  onDateChange 
+  onCategoryChange 
 }: SidebarProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null); // State for active accordion
   const [uniqueIdentifiers, setUniqueIdentifiers] = useState<{ value: string; label: string }[]>([]);
@@ -48,7 +44,7 @@ export function Sidebar({
 
     setUniqueIdentifiers(identifiers);
     setUniqueCategories(categories);
-  }, [publications]);
+  }, [publications, uniqueCategories.length, uniqueIdentifiers.length]);
 
   const handleIdentifierClick = (value: string) => {
     if (uniqueIdentifiers.some(item => item.value === value)) {

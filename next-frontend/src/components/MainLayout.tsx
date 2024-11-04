@@ -6,7 +6,6 @@ import { IconMenu2 } from '@tabler/icons-react';
 import classes from './MainLayout.module.css';
 import axios from 'axios';
 import qs from 'qs';
-import { log } from 'console';
 import { Viewport } from './viewport/viewport';
 import { Sidebar } from './sidebar/sidebar';
 import { Publication } from './types/publication';
@@ -21,15 +20,6 @@ interface FoleonAuthResponse {
   expires_in: number;
 }
 
-interface ViewportProps {
-  authToken: string | null;
-  initialPublication: any;  // adjust this type as needed
-  identifierFilter: string | null;
-  categoryFilter: string | null;
-  dateFilter: [Date | null, Date | null];
-  onPublicationsChange: (publications: Publication[]) => void;
-}
-
 export function MainLayout({ children }: MainLayoutProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -37,7 +27,6 @@ export function MainLayout({ children }: MainLayoutProps) {
   const [identifierFilter, setIdentifierFilter] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [publications, setPublications] = useState<Publication[]>([]);
-  const [dateFilter, setDateFilter] = useState<[Date | null, Date | null]>([null, null]);
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible);
@@ -101,6 +90,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         backgroundColor: '#2424248c'
       }}
     >
+      {children}
       <Button
         className={classes.mobileMenuButton}
         onClick={toggleSidebar}
@@ -128,10 +118,8 @@ export function MainLayout({ children }: MainLayoutProps) {
             publications={publications}
             identifierFilter={identifierFilter}
             categoryFilter={categoryFilter}
-            dateFilter={dateFilter}
             onIdentifierChange={(value) => handleFilterChange('identifier', value)}
             onCategoryChange={(value) => handleFilterChange('category', value)}
-            onDateChange={setDateFilter}
           />
         </Box>
         <Box style={{ flex: 1, position: 'relative', backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
@@ -140,7 +128,6 @@ export function MainLayout({ children }: MainLayoutProps) {
             initialPublication={initialPublication}
             identifierFilter={identifierFilter}
             categoryFilter={categoryFilter}
-            dateFilter={dateFilter}
             onPublicationsChange={setPublications}
           />
         </Box>

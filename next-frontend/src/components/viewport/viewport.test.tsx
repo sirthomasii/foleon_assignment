@@ -13,7 +13,6 @@ describe('Viewport', () => {
           initialPublication={null}
           identifierFilter={null}
           categoryFilter={null}
-          dateFilter={[null, null]}
           onPublicationsChange={() => {}}
         />
       </MantineProvider>
